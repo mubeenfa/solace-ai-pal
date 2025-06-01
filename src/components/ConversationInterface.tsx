@@ -2,13 +2,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
-import { Heart, Send } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Send, Heart } from 'lucide-react';
 
 interface Message {
   id: string;
   text: string;
-  sender: 'user' | 'serene';
+  isUser: boolean;
   timestamp: Date;
 }
 
@@ -16,17 +16,17 @@ export const ConversationInterface = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hello, I'm Serene. I'm here to listen and support you. How are you feeling today? Take your time - there's no rush. 💙",
-      sender: 'serene',
-      timestamp: new Date()
-    }
+      text: "Hello there! I'm Serene, your gentle AI companion. I'm here to listen and support you. How are you feeling today? 🌸",
+      isUser: false,
+      timestamp: new Date(),
+    },
   ]);
-  const [inputText, setInputText] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -34,76 +34,90 @@ export const ConversationInterface = () => {
   }, [messages]);
 
   const generateSereneResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
+    const message = userMessage.toLowerCase();
     
-    // Stress-related responses
-    if (lowerMessage.includes('stress') || lowerMessage.includes('anxious') || lowerMessage.includes('worried')) {
-      return "I hear that you're feeling stressed. That's completely understandable - life can feel overwhelming sometimes. Would you like to try a gentle breathing exercise with me? Just breathe in slowly for 4 counts, hold for 4, then breathe out for 6. You're safe here. 🌸";
+    // Stress and anxiety responses
+    if (message.includes('stress') || message.includes('anxious') || message.includes('overwhelmed')) {
+      const responses = [
+        "I hear that you're feeling stressed right now. That sounds really difficult. Let's take a moment together - would you like to try a simple breathing exercise with me?",
+        "It sounds like you're carrying a lot right now. You're brave for reaching out. Sometimes when we're overwhelmed, taking things one breath at a time can help. 💙",
+        "I'm sorry you're feeling this way. Stress can feel so heavy. You're not alone in this. Would it help to talk about what's weighing on your mind?"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
     }
     
-    // Sad or upset responses
-    if (lowerMessage.includes('sad') || lowerMessage.includes('upset') || lowerMessage.includes('cry')) {
-      return "I'm so sorry you're feeling this way. Your feelings are completely valid, and it's okay to not be okay sometimes. You don't have to go through this alone. Would you like to talk more about what's weighing on your heart? 💙";
+    // Sad or down responses
+    if (message.includes('sad') || message.includes('down') || message.includes('depressed') || message.includes('lonely')) {
+      const responses = [
+        "I'm really glad you shared that with me. It takes courage to express when we're hurting. Your feelings are completely valid. 🤗",
+        "I hear you, and I want you to know that it's okay to feel sad sometimes. You don't have to carry this alone. I'm here with you.",
+        "Thank you for trusting me with how you're feeling. Even in dark moments, you matter so much. Would you like to talk more about what's making you feel this way?"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
     }
     
-    // Angry or frustrated responses
-    if (lowerMessage.includes('angry') || lowerMessage.includes('frustrated') || lowerMessage.includes('mad')) {
-      return "I can sense your frustration, and that must be really difficult. Sometimes anger is our heart's way of protecting us. Take a moment to breathe with me. What would help you feel a little lighter right now? 🌿";
+    // Tired or exhausted
+    if (message.includes('tired') || message.includes('exhausted') || message.includes('drained')) {
+      const responses = [
+        "It sounds like you've been giving so much of yourself. Rest isn't selfish - it's necessary. You deserve to take care of yourself. 🌙",
+        "Being tired can make everything feel harder. You're doing your best, and that's enough. Would a few minutes of gentle breathing help you feel a bit more centered?",
+        "I hear how depleted you're feeling. Sometimes our bodies and minds are asking us to slow down. You have permission to rest. 💚"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
     }
     
-    // Tired or exhausted responses
-    if (lowerMessage.includes('tired') || lowerMessage.includes('exhausted') || lowerMessage.includes('drain')) {
-      return "It sounds like you're carrying a lot right now. Being tired isn't just about sleep - sometimes our hearts get tired too. You deserve rest and gentleness. What's one small thing that might bring you a moment of peace today? ✨";
+    // Breathing or calm requests
+    if (message.includes('breath') || message.includes('calm') || message.includes('relax')) {
+      return "Let's breathe together. Find a comfortable position and follow along: Breathe in slowly for 4 counts... hold for 4... and breathe out for 6. You're doing beautifully. 🌸";
     }
     
     // Positive responses
-    if (lowerMessage.includes('good') || lowerMessage.includes('happy') || lowerMessage.includes('great')) {
-      return "I'm so glad to hear you're feeling good! Those moments of lightness are precious. What's bringing you joy today? Remember to hold onto this feeling - you deserve all the happiness in the world. 🌻";
+    if (message.includes('good') || message.includes('better') || message.includes('happy') || message.includes('great')) {
+      const responses = [
+        "I'm so glad to hear that! It warms my heart when you're feeling good. You deserve all the happiness and peace. ✨",
+        "That's wonderful! It's beautiful to see you in a good space. Thank you for sharing this brightness with me. 😊",
+        "Your positive energy is lovely to witness. I hope this feeling stays with you and grows even stronger. 🌻"
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
     }
     
-    // Breathing exercise requests
-    if (lowerMessage.includes('breath') || lowerMessage.includes('calm') || lowerMessage.includes('relax')) {
-      return "Let's breathe together. Find a comfortable position and place one hand on your chest, one on your belly. Breathe in slowly through your nose for 4 counts... hold for 4... and breathe out through your mouth for 6. You're doing beautifully. Would you like to continue this for a few more breaths? 🌊";
-    }
-    
-    // Default supportive responses
-    const supportiveResponses = [
-      "Thank you for sharing that with me. Your feelings matter, and I'm here to listen. What's on your mind right now? 💙",
-      "I hear you, and I want you to know that whatever you're going through, you don't have to face it alone. Would you like to tell me more? 🌸",
-      "That sounds important to you. I'm here to listen without judgment. Take your time - there's no pressure at all. ✨",
-      "I'm grateful you felt comfortable sharing that with me. How are you taking care of yourself today? 🌿",
-      "Your feelings are valid, and it's okay to take things one moment at a time. What would feel most supportive right now? 💙"
+    // Default gentle responses
+    const defaultResponses = [
+      "Thank you for sharing with me. I'm here to listen. Would you like to tell me more about how you're feeling?",
+      "I hear you. Sometimes it helps just to have someone listen. I'm here for you, no matter what you're going through. 💙",
+      "Your feelings matter, and so do you. Take all the time you need. I'm here to support you in whatever way feels right.",
+      "I'm grateful you're here with me. Would you like to try a gentle breathing exercise, or would you prefer to keep talking?",
+      "You're safe here. Whatever you're experiencing is valid. I'm here to walk alongside you through whatever you're facing. 🌸"
     ];
     
-    return supportiveResponses[Math.floor(Math.random() * supportiveResponses.length)];
+    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
   };
 
-  const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+  const handleSendMessage = () => {
+    if (!inputValue.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date()
+      text: inputValue,
+      isUser: true,
+      timestamp: new Date(),
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setInputText('');
+    setInputValue('');
     setIsTyping(true);
 
-    // Simulate typing delay for more natural conversation
+    // Simulate AI thinking time
     setTimeout(() => {
-      const sereneResponse: Message = {
+      const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: generateSereneResponse(inputText),
-        sender: 'serene',
-        timestamp: new Date()
+        text: generateSereneResponse(inputValue),
+        isUser: false,
+        timestamp: new Date(),
       };
-      
-      setMessages(prev => [...prev, sereneResponse]);
+      setMessages(prev => [...prev, aiResponse]);
       setIsTyping(false);
-    }, 1500);
+    }, 1000 + Math.random() * 2000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -114,69 +128,75 @@ export const ConversationInterface = () => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl border-0">
-      {/* Messages Area */}
-      <div className="h-96 overflow-y-auto p-6 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+    <Card className="w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border-0 shadow-xl">
+      <CardContent className="p-0">
+        {/* Messages Container */}
+        <div className="h-96 overflow-y-auto p-6 space-y-4">
+          {messages.map((message) => (
             <div
-              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
-                message.sender === 'user'
-                  ? 'bg-blue-500 text-white rounded-br-sm'
-                  : 'bg-gray-100 text-gray-800 rounded-bl-sm'
-              }`}
+              key={message.id}
+              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
             >
-              {message.sender === 'serene' && (
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                  message.isUser
+                    ? 'bg-blue-500 text-white rounded-br-sm'
+                    : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                }`}
+              >
+                {!message.isUser && (
+                  <div className="flex items-center mb-2">
+                    <Heart className="w-4 h-4 text-pink-400 mr-2" />
+                    <span className="text-xs font-medium text-gray-600">Serene</span>
+                  </div>
+                )}
+                <p className="text-sm leading-relaxed">{message.text}</p>
+              </div>
+            </div>
+          ))}
+          
+          {isTyping && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 text-gray-800 rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs">
                 <div className="flex items-center mb-2">
                   <Heart className="w-4 h-4 text-pink-400 mr-2" />
-                  <span className="text-sm font-medium text-gray-600">Serene</span>
+                  <span className="text-xs font-medium text-gray-600">Serene</span>
                 </div>
-              )}
-              <p className="text-sm leading-relaxed">{message.text}</p>
-            </div>
-          </div>
-        ))}
-        
-        {isTyping && (
-          <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
-              <div className="flex items-center">
-                <Heart className="w-4 h-4 text-pink-400 mr-2" />
-                <span className="text-sm font-medium text-gray-600 mr-3">Serene</span>
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Input Area */}
-      <div className="p-6 border-t border-gray-200">
-        <div className="flex space-x-3">
-          <Input
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Share what's on your mind... I'm here to listen 💙"
-            className="flex-1 rounded-full border-gray-300 focus:border-blue-400 focus:ring-blue-400"
-          />
-          <Button
-            onClick={handleSendMessage}
-            disabled={!inputText.trim()}
-            className="rounded-full bg-blue-500 hover:bg-blue-600 text-white px-6"
-          >
-            <Send className="w-4 h-4" />
-          </Button>
+          )}
+          <div ref={messagesEndRef} />
         </div>
-      </div>
+
+        {/* Input Area */}
+        <div className="border-t bg-gray-50/80 p-4">
+          <div className="flex space-x-2">
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Share what's on your mind... I'm here to listen 💙"
+              className="flex-1 border-gray-200 focus:border-blue-300 focus:ring-blue-200"
+              disabled={isTyping}
+            />
+            <Button
+              onClick={handleSendMessage}
+              disabled={!inputValue.trim() || isTyping}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            Press Enter to send • Take your time, there's no rush 🌸
+          </p>
+        </div>
+      </CardContent>
     </Card>
   );
 };
